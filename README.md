@@ -46,9 +46,8 @@ cd <repo-name>
 make
 ```
 
-This will generate two executables:
-- `steg_encode`
-- `steg_decode`
+This will generate the executable:
+- `stego.exe`
 
 ---
 
@@ -58,13 +57,15 @@ This will generate two executables:
 Hide a secret file inside a BMP image.
 
 ```bash
-./steg_encode -e <source.bmp> <secret_file> <output_stego.bmp>
+./stego.exe -e <source.bmp> <secret_file> <output_stego.bmp>
 ```
 
 Example:
 ```bash
-./steg_encode -e input.bmp secret.txt stego.bmp
+./stego.exe -e input.bmp secret.txt stego.bmp
 ```
+
+**Note:** You will be prompted to enter a "magic string" (password) during execution.
 
 ---
 
@@ -72,15 +73,57 @@ Example:
 Extract the secret file from the stego BMP.
 
 ```bash
-./steg_decode -d <stego.bmp>
+./stego.exe -d <stego.bmp>
 ```
 
 Example:
 ```bash
-./steg_decode -d stego.bmp
+./stego.exe -d stego.bmp
 ```
 
+**Note:** You must enter the same "magic string" used during encoding.
 This will create a file named `decode_file.<ext>` where `<ext>` is the original extension of the hidden file.
+
+---
+
+## 🐳 Docker Usage
+
+You can run this application using Docker without installing GCC or other dependencies on your machine.
+
+### 1. Build the Docker Image
+Run this command in the root of the project:
+
+```bash
+docker build -t stego-app .
+```
+
+### 2. Run with Docker
+
+To interact with files on your local machine (read input, save output), we use volume mounting (`-v`).
+
+**Encoding:**
+```bash
+docker run -it --rm -v "$(pwd):/usr/src/app" stego-app ./stego.exe -e <source.bmp> <secret_file> <output.bmp>
+```
+*Example:*
+```bash
+docker run -it --rm -v "$(pwd):/usr/src/app" stego-app ./stego.exe -e sample.bmp secret.txt encoded.bmp
+```
+
+**Decoding:**
+```bash
+docker run -it --rm -v "$(pwd):/usr/src/app" stego-app ./stego.exe -d <stego.bmp>
+```
+*Example:*
+```bash
+docker run -it --rm -v "$(pwd):/usr/src/app" stego-app ./stego.exe -d encoded.bmp
+```
+
+**Command Breakdown:**
+- `-it`: Interactive mode (required for entering the magic string).
+- `--rm`: Remove the container after it finishes.
+- `-v "$(pwd):/usr/src/app"`: Mount current directory to container so it can access your files.
+- `stego-app`: The name of the image you built.
 
 ---
 
@@ -88,10 +131,12 @@ This will create a file named `decode_file.<ext>` where `<ext>` is the original 
 
 ```bash
 # Encode
-./steg_encode -e lena.bmp notes.txt stego.bmp
+./stego.exe -e lena.bmp notes.txt stego.bmp
+# Prompts: Enter the magic string: [your-password]
 
 # Decode
-./steg_decode -d stego.bmp
+./stego.exe -d stego.bmp
+# Prompts: Enter the magic string to decode: [your-password]
 # Output → decode_file.txt
 ```
 

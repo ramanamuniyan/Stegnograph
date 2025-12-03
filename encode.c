@@ -128,30 +128,20 @@ OperationType check_operation_type(char* argv[])
 }
 
 
-Status read_and_validate_encode_args(char *argv[], EncodeInfo *encInfo)
+Status read_and_validate_encode_args(EncodeInfo *encInfo)
 {
-    
+    if(encInfo->src_image_fname == NULL || strstr(encInfo->src_image_fname,".bmp")==NULL)
+        return e_failure;
 
-   if( strstr(argv[2],".bmp")==NULL)
-   return e_failure;
-
-  
-   if(strstr(argv[3],".")==NULL)
-   return e_failure;
+    if(encInfo->secret_fname == NULL || strstr(encInfo->secret_fname,".")==NULL)
+        return e_failure;
     else
     {
-         strcpy( encInfo->extn_secret_file ,strstr(argv[3],"."));
-
-        encInfo->ext_size = strlen( encInfo->extn_secret_file);
-       // printf("%d\",encInfo->ext_size);
-       // puts(encInfo->extn_secret_file);
+        strcpy(encInfo->extn_secret_file, strstr(encInfo->secret_fname,"."));
+        encInfo->ext_size = strlen(encInfo->extn_secret_file);
     }
 
-
-
-
-   return e_success;
-
+    return e_success;
 }
 
 
